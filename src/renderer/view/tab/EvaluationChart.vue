@@ -108,6 +108,8 @@ type ColorPalette = {
   researcher2: string;
   researcher3: string;
   researcher4: string;
+  blackPlayerElapsedTime: string;
+  whitePlayerElapsedTime: string;
 };
 
 function getColorPalette(thema: Thema): ColorPalette {
@@ -124,6 +126,8 @@ function getColorPalette(thema: Thema): ColorPalette {
         researcher2: "#FF1F4E",
         researcher3: "#6C22FF",
         researcher4: "#FFB912",
+        blackPlayerElapsedTime: "rgba(255,31,78,0.5)",
+        whitePlayerElapsedTime: "rgba(108,34,255,0.5)",
       };
     case Thema.DARK_GREEN:
     case Thema.DARK:
@@ -138,6 +142,8 @@ function getColorPalette(thema: Thema): ColorPalette {
         researcher2: "#FF6384",
         researcher3: "#9966FF",
         researcher4: "#FFCD56",
+        blackPlayerElapsedTime: "rgba(255,99,132,0.5)",
+        whitePlayerElapsedTime: "rgba(153,102,255,0.5)",
       };
   }
 }
@@ -248,6 +254,52 @@ const verticalLine = (
   };
 };
 
+const getMaxElapsedMs = (record: ImmutableRecord) =>
+  Math.max(...record.moves.map((node) => node.elapsedMs));
+
+const elapsedTimeLines = (record: ImmutableRecord, config: ChartConfig) => {
+  const dataPointsByColor: {
+    black: { x: number; y: number }[];
+    white: { x: number; y: number }[];
+  } = { black: [], white: [] };
+
+  // 評価値グラフに表示する場合は、先手: 正、後手: 負となるように値を調整する
+  const signByColor: { black: number; white: number } =
+    config.type === EvaluationChartType.RAW ? { black: +1, white: -1 } : { black: +1, white: +1 };
+  const scale = config.type === EvaluationChartType.RAW ? MAX_SCORE : 100;
+  const maxElapsedMs = getMaxElapsedMs(record);
+
+  for (const node of record.moves) {
+    // prev がなかったら先手(black)
+    const color = node.prev?.nextColor || Color.BLACK;
+    dataPointsByColor[color].push({
+      x: node.ply,
+      y: signByColor[color] * (node.elapsedMs / maxElapsedMs) * scale,
+    });
+  }
+
+  return [
+    {
+      label: `▲${t.elapsedTime}`,
+      borderColor: "black",
+      backgroundColor: config.palette.blackPlayerElapsedTime,
+      fill: true,
+      data: dataPointsByColor[Color.BLACK],
+      borderWidth: 1,
+      showLine: true,
+    },
+    {
+      label: `△${t.elapsedTime}`,
+      borderColor: "black",
+      backgroundColor: config.palette.whitePlayerElapsedTime,
+      fill: true,
+      data: dataPointsByColor[Color.WHITE],
+      borderWidth: 1,
+      showLine: true,
+    },
+  ];
+};
+
 const buildDatasets = (record: ImmutableRecord, config: ChartConfig) => {
   const series = [
     { borderColor: config.palette.blackPlayer, type: Series.BLACK_PLAYER },
@@ -263,6 +315,9 @@ const buildDatasets = (record: ImmutableRecord, config: ChartConfig) => {
     if (dataset.data.length > 0) {
       datasets.push(dataset);
     }
+  }
+  for (const dataset of elapsedTimeLines(record, config)) {
+    datasets.push(dataset);
   }
   return datasets;
 };
@@ -281,6 +336,12 @@ const buildScalesOption = (record: ImmutableRecord, config: ChartConfig) => {
       max: getMaxScore(config.type),
       ticks: { color: config.palette.ticks, stepSize },
       grid: { color: config.palette.grid },
+      position: "left",
+    },
+    y1: {
+      min: config.type === EvaluationChartType.RAW ? (-1 * getMaxElapsedMs(record)) / 1000 : 0,
+      max: getMaxElapsedMs(record) / 1000,
+      position: "right",
     },
   };
 };
