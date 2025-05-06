@@ -20,7 +20,7 @@ import { Lazy } from "@/renderer/helpers/lazy";
 import { EvaluationChartType } from "@/common/settings/layout";
 
 const MATE_SCORE = 1000000;
-const MAX_SCORE = 2000;
+const MAX_SCORE = 5000;
 const MIN_SCORE = -MAX_SCORE;
 
 enum Series {
