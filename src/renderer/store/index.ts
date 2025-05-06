@@ -77,6 +77,8 @@ export type PVPreview = {
   pv: Move[];
 };
 
+export type Candidate = { move: Move; rank: number };
+
 function getMessageAttachmentsByGameResults(results: GameResults): Attachment[] {
   const statistics = calculateGameStatistics(results);
   return [
@@ -467,11 +469,11 @@ class Store {
     return this.usiMonitor.sessions;
   }
 
-  get candidates(): Move[] {
+  get candidates(): Candidate[] {
     const appSettings = useAppSettings();
     const maxScoreDiff = 100;
     const sfen = this.recordManager.record.position.sfen;
-    const candidates: Move[] = [];
+    const candidates: Candidate[] = [];
     const usiSet = new Set<string>();
     for (const session of this.usiMonitor.sessions) {
       if (session.ponderMove) {
@@ -519,7 +521,8 @@ class Store {
         if (!move || !pos.doMove(move)) {
           continue;
         }
-        candidates.push(move);
+        const candidate: Candidate = { move: move, rank: entryCount };
+        candidates.push(candidate);
         usiSet.add(usi);
         entryCount++;
       }

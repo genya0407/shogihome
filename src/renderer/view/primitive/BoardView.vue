@@ -57,7 +57,7 @@
       <img
         v-for="arrow in arrows"
         :key="arrow.id"
-        src="/arrow/arrow.svg"
+        :src="`/arrow/arrow_${arrow.rank}.svg`"
         :style="arrow.style"
         style="object-fit: cover; object-position: left top"
       />
@@ -189,6 +189,7 @@ import {
 import { BoardLayoutType } from "@/common/settings/layout";
 import { CompactLayoutBuilder } from "./board/compact";
 import BoardGrid from "./BoardGrid.vue";
+import { Candidate } from "@/renderer/store";
 
 type State = {
   pointer: Square | Piece | null;
@@ -260,7 +261,7 @@ const props = defineProps({
     default: null,
   },
   candidates: {
-    type: Array as PropType<Move[]>,
+    type: Array as PropType<Candidate[]>,
     required: false,
     default: () => [],
   },
@@ -532,32 +533,34 @@ const arrows = computed(() => {
     const boardBase = layoutBuilder.value.boardBasePoint;
     const blackHandBase = layoutBuilder.value.blackHandBasePoint;
     const whiteHandBase = layoutBuilder.value.whiteHandBasePoint;
+    const move = candidate.move;
     const start =
-      candidate.from instanceof Square
-        ? boardBase.add(boardLayoutBuilder.value.centerOfSquare(candidate.from))
-        : candidate.color === Color.BLACK
+      move.from instanceof Square
+        ? boardBase.add(boardLayoutBuilder.value.centerOfSquare(move.from))
+        : move.color === Color.BLACK
           ? blackHandBase.add(
               handLayoutBuilder.value.centerOfPieceType(
                 props.position.hand(Color.BLACK),
                 Color.BLACK,
-                candidate.from,
+                move.from,
               ),
             )
           : whiteHandBase.add(
               handLayoutBuilder.value.centerOfPieceType(
                 props.position.hand(Color.WHITE),
                 Color.WHITE,
-                candidate.from,
+                move.from,
               ),
             );
-    const end = boardBase.add(boardLayoutBuilder.value.centerOfSquare(candidate.to));
+    const end = boardBase.add(boardLayoutBuilder.value.centerOfSquare(move.to));
     const middle = start.add(end).multiply(0.5);
     const distance = start.distanceTo(end);
     const angle = start.angleTo(end) - Math.PI;
     const x = middle.x - distance / 2;
     const y = middle.y - arrowWidth / 2;
     return {
-      id: candidate.usi,
+      id: move.usi,
+      rank: candidate.rank,
       style: {
         left: x + "px",
         top: y + "px",
