@@ -77,7 +77,7 @@ export type PVPreview = {
   pv: Move[];
 };
 
-export type Candidate = { move: Move; rank: number };
+export type Candidate = { move: Move; score: number };
 
 function getMessageAttachmentsByGameResults(results: GameResults): Attachment[] {
   const statistics = calculateGameStatistics(results);
@@ -521,7 +521,7 @@ class Store {
         if (!move || !pos.doMove(move)) {
           continue;
         }
-        const candidate: Candidate = { move: move, rank: entryCount };
+        const candidate: Candidate = { move: move, score: score || 0 };
         candidates.push(candidate);
         usiSet.add(usi);
         entryCount++;

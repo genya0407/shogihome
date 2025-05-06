@@ -55,9 +55,9 @@
       </div>
 
       <img
-        v-for="arrow in arrows"
+        v-for="(arrow, rank) in arrows.sort((a, b) => b.score - a.score)"
         :key="arrow.id"
-        :src="`/arrow/arrow_${arrow.rank}.svg`"
+        :src="`/arrow/arrow_${rank}.svg`"
         :style="arrow.style"
         style="object-fit: cover; object-position: left top"
       />
@@ -560,7 +560,7 @@ const arrows = computed(() => {
     const y = middle.y - arrowWidth / 2;
     return {
       id: move.usi,
-      rank: candidate.rank,
+      score: candidate.score,
       style: {
         left: x + "px",
         top: y + "px",
