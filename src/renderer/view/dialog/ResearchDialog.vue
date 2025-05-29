@@ -1,12 +1,12 @@
 <template>
-  <div>
-    <dialog ref="dialog" class="root">
+  <DialogFrame @cancel="onCancel">
+    <div class="root">
       <div class="title">{{ t.research }}</div>
       <div class="form-group">
         <PlayerSelector
           v-model:player-uri="engineURI"
           :engines="engines"
-          :filter-label="USIEngineLabel.RESEARCH"
+          :default-tag="getPredefinedUSIEngineTag('research')"
           :display-thread-state="true"
           :display-multi-pv-state="true"
           @update-engines="onUpdatePlayerSettings"
@@ -16,7 +16,7 @@
         <PlayerSelector
           v-model:player-uri="secondaryEngineURIs[index]"
           :engines="engines"
-          :filter-label="USIEngineLabel.RESEARCH"
+          :default-tag="getPredefinedUSIEngineTag('research')"
           :display-thread-state="true"
           :display-multi-pv-state="true"
           @update-engines="onUpdatePlayerSettings"
@@ -31,17 +31,26 @@
       </button>
       <div class="form-group">
         <div class="form-item">
-          <ToggleButton v-model:value="enableMaxSeconds" />
-          <div class="form-item-small-label">{{ t.toPrefix }}</div>
+          <div class="form-item-label-wide">{{ t.timePerPosition }}</div>
+          <ToggleButton v-model:value="researchSettings.enableMaxSeconds" />
           <input
-            ref="maxSeconds"
-            :value="researchSettings.maxSeconds"
+            v-model.number="researchSettings.maxSeconds"
             class="number"
             type="number"
             min="1"
-            :disabled="!enableMaxSeconds"
+            :disabled="!researchSettings.enableMaxSeconds"
           />
-          <div class="form-item-small-label">{{ t.secondsSuffix }}{{ t.toSuffix }}</div>
+        </div>
+        <div class="form-item">
+          <div class="form-item-label-wide">{{ t.suggestionsCount }}</div>
+          <ToggleButton v-model:value="researchSettings.overrideMultiPV" />
+          <input
+            v-model.number="researchSettings.multiPV"
+            class="number"
+            type="number"
+            min="1"
+            :disabled="!researchSettings.overrideMultiPV"
+          />
         </div>
       </div>
       <div class="main-buttons">
@@ -52,63 +61,51 @@
           {{ t.cancel }}
         </button>
       </div>
-    </dialog>
-  </div>
+    </div>
+  </DialogFrame>
 </template>
 
 <script setup lang="ts">
 import { t } from "@/common/i18n";
-import { showModalDialog } from "@/renderer/helpers/dialog.js";
 import api from "@/renderer/ipc/api";
 import {
   defaultResearchSettings,
   ResearchSettings,
   validateResearchSettings,
 } from "@/common/settings/research";
-import { USIEngineLabel, USIEngines } from "@/common/settings/usi";
+import { getPredefinedUSIEngineTag, USIEngines } from "@/common/settings/usi";
 import { useStore } from "@/renderer/store";
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import PlayerSelector from "@/renderer/view/dialog/PlayerSelector.vue";
-import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
-import { readInputAsNumber } from "@/renderer/helpers/form";
 import ToggleButton from "@/renderer/view/primitive/ToggleButton.vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
 import { useErrorStore } from "@/renderer/store/error";
 import { useBusyState } from "@/renderer/store/busy";
+import DialogFrame from "./DialogFrame.vue";
 
 const store = useStore();
 const busyState = useBusyState();
-const dialog = ref();
 const researchSettings = ref(defaultResearchSettings());
 const engines = ref(new USIEngines());
 const engineURI = ref("");
 const secondaryEngineURIs = ref([] as string[]);
-const enableMaxSeconds = ref(false);
-const maxSeconds = ref();
 
 busyState.retain();
 
 onMounted(async () => {
-  showModalDialog(dialog.value, onCancel);
-  installHotKeyForDialog(dialog.value);
   try {
     researchSettings.value = await api.loadResearchSettings();
     engines.value = await api.loadUSIEngines();
     engineURI.value = researchSettings.value.usi?.uri || "";
     secondaryEngineURIs.value =
       researchSettings.value.secondaries?.map((engine) => engine.usi?.uri || "") || [];
-    enableMaxSeconds.value = researchSettings.value.enableMaxSeconds;
   } catch (e) {
     useErrorStore().add(e);
     store.destroyModalDialog();
   } finally {
     busyState.release();
   }
-});
-
-onBeforeUnmount(() => {
-  uninstallHotKeyForDialog(dialog.value);
 });
 
 const onStart = () => {
@@ -120,18 +117,17 @@ const onStart = () => {
       usi: secondary,
     });
   }
-  const researchSettings: ResearchSettings = {
+  const newSettings: ResearchSettings = {
+    ...researchSettings.value,
     usi: engine,
     secondaries: secondaries,
-    enableMaxSeconds: enableMaxSeconds.value,
-    maxSeconds: readInputAsNumber(maxSeconds.value),
   };
-  const e = validateResearchSettings(researchSettings);
+  const e = validateResearchSettings(newSettings);
   if (e) {
     useErrorStore().add(e);
     return;
   }
-  store.startResearch(researchSettings);
+  store.startResearch(newSettings);
 };
 
 const onCancel = () => {

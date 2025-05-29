@@ -116,8 +116,8 @@ const api: Bridge = {
   async saveRecord(path: string, data: Uint8Array): Promise<void> {
     await ipcRenderer.invoke(Background.SAVE_RECORD, path, data);
   },
-  async loadRemoteRecordFile(url: string): Promise<string> {
-    return await ipcRenderer.invoke(Background.LOAD_REMOTE_RECORD_FILE, url);
+  async loadRemoteTextFile(url: string): Promise<string> {
+    return await ipcRenderer.invoke(Background.LOAD_REMOTE_TEXT_FILE, url);
   },
   async convertRecordFiles(json: string): Promise<string> {
     return await ipcRenderer.invoke(Background.CONVERT_RECORD_FILES, json);
@@ -214,8 +214,8 @@ const api: Bridge = {
   async usiGoInfinite(sessionID: number, usi: string): Promise<void> {
     await ipcRenderer.invoke(Background.USI_GO_INFINITE, sessionID, usi);
   },
-  async usiGoMate(sessionID: number, usi: string): Promise<void> {
-    await ipcRenderer.invoke(Background.USI_GO_MATE, sessionID, usi);
+  async usiGoMate(sessionID: number, usi: string, maxSeconds?: number): Promise<void> {
+    await ipcRenderer.invoke(Background.USI_GO_MATE, sessionID, usi, maxSeconds);
   },
   async usiStop(sessionID: number): Promise<void> {
     await ipcRenderer.invoke(Background.USI_STOP, sessionID);

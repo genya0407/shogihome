@@ -17,6 +17,7 @@ export const vi: Texts = {
   recordFileBatchConversion: "Chuyển đổi kỳ phổ số lượng lớn",
   close: "Đóng",
   quit: "Thoát",
+  reload: "再読み込み", // TODO: Translate
   editing: "Sửa",
   copyAsKIF: "Sao chép (KIF)",
   copyAsKI2: "Sao chép (KI2)",
@@ -118,7 +119,6 @@ export const vi: Texts = {
   invalidGames: "Ván không hợp lệ",
   eloRatingDiff: "Khoảng cách Elo",
   ignoreDraws: "Bỏ qua ván hòa",
-  drawCountAsHalfWins: "Hòa bằng nửa ván thắng",
   zValue: "Giá trị Z",
   significance5pc: "Độ nổi bật 5%",
   significance1pc: "Độ nổi bật 1%",
@@ -149,10 +149,16 @@ export const vi: Texts = {
   repetition: "Hòa do lặp nước",
   mate: "Chiếu hết",
   noMate: "Không chiếu hết",
+  blackWin: "先手勝ち", // TODO: Translate
+  whiteWin: "後手勝ち", // TODO: Translate
+  all: "全て", // TODO: Translate
+  others: "その他", // TODO: Translate
+  minRate: "最小レート", // TODO: Translate
   mateSearch: "Tìm chiếu hết",
   startMateSearch: "Bắt đầu tìm chiếu hết",
   stopMateSearch: "Dừng tìm chiếu hết",
   noMateFound: "Không có chiếu hết.",
+  timePerPosition: "思考時間", // TODO: Translate
   timeout: "Hết giờ",
   foulWin: "Thắng do nước đi phạm luật",
   foulLose: "Thua do nước đi phạm luật",
@@ -204,6 +210,10 @@ export const vi: Texts = {
   boardOpacity: "Độ đục bàn cờ",
   pieceStandOpacity: "Độ đục komadai",
   recordOpacity: "Độ đục kỳ phổ",
+  promotionSelector: "成・不成の表示", // TODO: Translate
+  centeredHorizontal: "水平・中央寄せ", // TODO: Translate
+  promoteFirstVertical: "垂直・成優先", // TODO: Translate
+  promoteFirstHorizontal: "水平・成優先", // TODO: Translate
   showFileAndRank: "Hiện hàng và cột",
   showLeftControls: "Hiện điều khiển bên trái",
   showRightControls: "Hiện điều khiển bên phải",
@@ -458,6 +468,10 @@ export const vi: Texts = {
   stable: "Ổn định",
   latest: "Mới nhất",
   backgroundColor: "Màu nền",
+  dialogPosition: "ダイアログ表示位置", // TODO: Translate
+  alignLeft: "左", // TODO: Translate
+  alignRight: "右", // TODO: Translate
+  alignCenter: "中央", // TODO: Translate
   dialogBackdrop: "Nền hộp thoại",
   record: "Kỳ phổ",
   book: "Định thức",

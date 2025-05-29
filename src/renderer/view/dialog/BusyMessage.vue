@@ -1,13 +1,11 @@
 <template>
-  <div>
-    <dialog ref="dialog" class="busy">
-      <div class="message-box">
-        <Icon :icon="IconType.BUSY" />
-        <div class="message">{{ t.processingPleaseWait }}</div>
-      </div>
-      <div v-if="progressPercent">{{ progressPercent }}%</div>
-    </dialog>
-  </div>
+  <dialog ref="dialog" class="message-box">
+    <div class="message-area">
+      <Icon :icon="IconType.BUSY" />
+      <div class="message">{{ t.processingPleaseWait }}</div>
+    </div>
+    <div v-if="progressPercent">{{ progressPercent }}%</div>
+  </dialog>
 </template>
 
 <script setup lang="ts">
@@ -31,9 +29,9 @@ const progressPercent = computed(() => {
 </script>
 
 <style scoped>
-dialog.busy {
+dialog {
   color: var(--busy-dialog-color);
   background-color: var(--busy-dialog-bg-color);
-  border: 3px solid var(--busy-dialog-border-color);
+  border-color: var(--busy-dialog-border-color);
 }
 </style>

@@ -64,7 +64,7 @@ export interface API {
   clearRecordFileHistory(): Promise<void>;
   saveRecordFileBackup(kif: string): Promise<void>;
   loadRecordFileBackup(name: string): Promise<string>;
-  loadRemoteRecordFile(url: string): Promise<string>;
+  loadRemoteTextFile(url: string): Promise<string>;
   convertRecordFiles(settings: BatchConversionSettings): Promise<BatchConversionResult>;
   showSelectSFENDialog(lastPath: string): Promise<string>;
   loadSFENFile(path: string): Promise<string[]>;
@@ -92,7 +92,7 @@ export interface API {
   usiGoPonder(sessionID: number, usi: string, timeStates: TimeStates): Promise<void>;
   usiPonderHit(sessionID: number, timeStates: TimeStates): Promise<void>;
   usiGoInfinite(sessionID: number, usi: string): Promise<void>;
-  usiGoMate(sessionID: number, usi: string): Promise<void>;
+  usiGoMate(sessionID: number, usi: string, maxSeconds?: number): Promise<void>;
   usiStop(sessionID: number): Promise<void>;
   usiGameover(sessionID: number, result: GameResult): Promise<void>;
   usiQuit(sessionID: number): Promise<void>;

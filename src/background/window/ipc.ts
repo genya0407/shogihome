@@ -365,7 +365,7 @@ ipcMain.handle(
   },
 );
 
-ipcMain.handle(Background.LOAD_REMOTE_RECORD_FILE, async (event, url: string) => {
+ipcMain.handle(Background.LOAD_REMOTE_TEXT_FILE, async (event, url: string) => {
   validateIPCSender(event.senderFrame);
   return await fetch(url);
 });
@@ -747,10 +747,13 @@ ipcMain.handle(Background.USI_GO_INFINITE, (event, sessionID: number, usi: strin
   usiGoInfinite(sessionID, usi);
 });
 
-ipcMain.handle(Background.USI_GO_MATE, (event, sessionID: number, usi: string) => {
-  validateIPCSender(event.senderFrame);
-  usiGoMate(sessionID, usi);
-});
+ipcMain.handle(
+  Background.USI_GO_MATE,
+  (event, sessionID: number, usi: string, maxSeconds?: number) => {
+    validateIPCSender(event.senderFrame);
+    usiGoMate(sessionID, usi, maxSeconds);
+  },
+);
 
 ipcMain.handle(Background.USI_STOP, (event, sessionID: number) => {
   validateIPCSender(event.senderFrame);

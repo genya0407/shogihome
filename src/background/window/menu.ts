@@ -88,7 +88,12 @@ function createMenuTemplate(window: BrowserWindow) {
         menuItem(t.saveRecordAs, MenuEvent.SAVE_RECORD_AS, [AppState.NORMAL], "CmdOrCtrl+Shift+S"),
         menuItem(t.history, MenuEvent.HISTORY, [AppState.NORMAL], "CmdOrCtrl+H"),
         { type: "separator" },
-        menuItem(t.loadRecordFromWeb, MenuEvent.LOAD_REMOTE_RECORD, [AppState.NORMAL]),
+        menuItem(
+          t.loadRecordFromWeb,
+          MenuEvent.LOAD_REMOTE_RECORD,
+          [AppState.NORMAL],
+          "CmdOrCtrl+Shift+O",
+        ),
         { type: "separator" },
         menuItem(t.batchConversion, MenuEvent.BATCH_CONVERSION, [AppState.NORMAL]),
         menuItem(t.share, MenuEvent.SHARE, [AppState.NORMAL]),
@@ -258,6 +263,7 @@ function createMenuTemplate(window: BrowserWindow) {
             ),
           ],
         },
+        menuItem(t.changePieceSet, MenuEvent.CHANGE_PIECE_SET, [AppState.POSITION_EDITING]),
         // NOTE:
         //   Mac ではこれらのショートカットがメニューに無いとテキスト編集時のショートカット操作ができない。
         //   https://github.com/sunfish-shogi/shogihome/issues/694
@@ -283,6 +289,7 @@ function createMenuTemplate(window: BrowserWindow) {
         menuItem(t.logout, MenuEvent.LOGOUT, [AppState.CSA_GAME]),
         { type: "separator" },
         menuItem(t.calculateJishogiPoints, MenuEvent.CALCULATE_POINTS, null),
+        menuItem(t.displayGameResults, MenuEvent.DISPLAY_GAME_RESULTS, [AppState.GAME]),
       ],
     },
     {

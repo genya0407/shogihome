@@ -15,6 +15,7 @@ export type Texts = {
   recordFileBatchConversion: string;
   close: string;
   quit: string;
+  reload: string;
   editing: string;
   copyAsKIF: string;
   copyAsKI2: string;
@@ -113,7 +114,6 @@ export type Texts = {
   invalidGames: string;
   eloRatingDiff: string;
   ignoreDraws: string;
-  drawCountAsHalfWins: string;
   zValue: string;
   significance5pc: string;
   significance1pc: string;
@@ -144,10 +144,16 @@ export type Texts = {
   repetition: string;
   mate: string;
   noMate: string;
+  blackWin: string;
+  whiteWin: string;
+  all: string;
+  others: string;
+  minRate: string;
   mateSearch: string;
   startMateSearch: string;
   stopMateSearch: string;
   noMateFound: string;
+  timePerPosition: string;
   timeout: string;
   foulWin: string;
   foulLose: string;
@@ -199,6 +205,10 @@ export type Texts = {
   boardOpacity: string;
   pieceStandOpacity: string;
   recordOpacity: string;
+  promotionSelector: string;
+  centeredHorizontal: string;
+  promoteFirstVertical: string;
+  promoteFirstHorizontal: string;
   showFileAndRank: string;
   showLeftControls: string;
   showRightControls: string;
@@ -453,6 +463,10 @@ export type Texts = {
   stable: string;
   latest: string;
   backgroundColor: string;
+  dialogPosition: string;
+  alignLeft: string;
+  alignRight: string;
+  alignCenter: string;
   dialogBackdrop: string;
   record: string;
   book: string;

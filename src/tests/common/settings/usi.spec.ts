@@ -434,6 +434,7 @@ describe("settings/usi", () => {
         game: true,
         mate: false,
       },
+      tags: ["対局"],
       enableEarlyPonder: false,
     });
   });
@@ -751,6 +752,64 @@ describe("settings/usi", () => {
       research: true,
       mate: true,
     });
+  });
+
+  it("USIEngines/tags", () => {
+    const engines = new USIEngines(
+      JSON.stringify({
+        engines: {
+          "es://usi-engine/a": {
+            tags: ["検討", "NNUE"],
+          },
+          "es://usi-engine/b": {
+            labels: {
+              game: true,
+              research: false,
+              mate: true,
+            },
+          },
+        },
+      }),
+    );
+    expect(engines.getEngine("es://usi-engine/a")?.tags).toStrictEqual(["検討", "NNUE"]);
+    expect(engines.getEngine("es://usi-engine/b")?.tags).toStrictEqual(["対局", "詰み探索"]);
+    expect(engines.tagList).toHaveLength(4);
+    engines.addTag("es://usi-engine/a", "対局");
+    engines.addTag("es://usi-engine/b", "DL");
+    expect(engines.getEngine("es://usi-engine/a")?.tags).toStrictEqual(["検討", "NNUE", "対局"]);
+    expect(engines.getEngine("es://usi-engine/b")?.tags).toStrictEqual(["対局", "詰み探索", "DL"]);
+    expect(engines.getEngine("es://usi-engine/a")?.labels).toStrictEqual({
+      game: true,
+      research: true,
+      mate: false,
+    });
+    expect(engines.getEngine("es://usi-engine/b")?.labels).toStrictEqual({
+      game: true,
+      research: false,
+      mate: true,
+    });
+    expect(engines.tagList.map((entry) => entry.name)).toStrictEqual([
+      "DL",
+      "NNUE",
+      "対局",
+      "検討",
+      "詰み探索",
+    ]);
+    engines.removeTag("es://usi-engine/a", "検討");
+    engines.removeTag("es://usi-engine/b", "詰み探索");
+    expect(engines.getEngine("es://usi-engine/a")?.tags).toStrictEqual(["NNUE", "対局"]);
+    expect(engines.getEngine("es://usi-engine/b")?.tags).toStrictEqual(["対局", "DL"]);
+    expect(engines.getEngine("es://usi-engine/a")?.labels).toStrictEqual({
+      game: true,
+      research: false,
+      mate: false,
+    });
+    expect(engines.getEngine("es://usi-engine/b")?.labels).toStrictEqual({
+      game: true,
+      research: false,
+      mate: false,
+    });
+    expect(engines.tagList).toHaveLength(3);
   });
 
   it("USIEngines/exportUSIEnginesForCLI", () => {

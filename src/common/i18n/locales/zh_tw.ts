@@ -17,6 +17,7 @@ export const zh_tw: Texts = {
   recordFileBatchConversion: "棋譜大量轉換",
   close: "關閉",
   quit: "離開",
+  reload: "再読み込み", // TODO: Translate
   editing: "編輯",
   copyAsKIF: "複製KIF棋譜",
   copyAsKI2: "複製KI2棋譜",
@@ -115,7 +116,6 @@ export const zh_tw: Texts = {
   invalidGames: "無效對局數",
   eloRatingDiff: "等級分相差",
   ignoreDraws: "忽略平手對局",
-  drawCountAsHalfWins: "平手作0.5勝",
   zValue: "Z值",
   significance5pc: "顯著性水準5%",
   significance1pc: "顯著性水準1%",
@@ -146,10 +146,16 @@ export const zh_tw: Texts = {
   repetition: "千日手",
   mate: "詰死",
   noMate: "無詰",
+  blackWin: "先手勝ち", // TODO: Translate
+  whiteWin: "後手勝ち", // TODO: Translate
+  all: "全て", // TODO: Translate
+  others: "その他", // TODO: Translate
+  minRate: "最小レート", // TODO: Translate
   mateSearch: "詰搜尋",
   startMateSearch: "開始詰搜尋",
   stopMateSearch: "結束詰搜尋",
   noMateFound: "在目前的盤面中找不到詰。",
+  timePerPosition: "思考時間", // TODO: Translate
   timeout: "時間耗盡",
   foulWin: "反則勝利",
   foulLose: "反則敗北",
@@ -201,6 +207,10 @@ export const zh_tw: Texts = {
   boardOpacity: "盤面不透明度",
   pieceStandOpacity: "駒台不透明度",
   recordOpacity: "棋譜不透明度",
+  promotionSelector: "成・不成の表示", // TODO: Translate
+  centeredHorizontal: "水平・中央寄せ", // TODO: Translate
+  promoteFirstVertical: "垂直・成優先", // TODO: Translate
+  promoteFirstHorizontal: "水平・成優先", // TODO: Translate
   showFileAndRank: "顯示段・筋",
   showLeftControls: "顯示左側操作按鈕",
   showRightControls: "顯示右側操作按鈕",
@@ -455,6 +465,10 @@ export const zh_tw: Texts = {
   stable: "安定版",
   latest: "最新版",
   backgroundColor: "背景顏色",
+  dialogPosition: "ダイアログ表示位置", // TODO: Translate
+  alignLeft: "左", // TODO: Translate
+  alignRight: "右", // TODO: Translate
+  alignCenter: "中央", // TODO: Translate
   dialogBackdrop: "對話窗背景",
   record: "棋譜",
   book: "定跡",
