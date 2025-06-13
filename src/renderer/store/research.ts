@@ -104,9 +104,6 @@ export class ResearchManager {
     try {
       await Promise.all(this.engines.map((engine) => engine.usi.launch()));
       await Promise.all(this.engines.map((engine) => engine.usi.readyNewGame()));
-      for (const engine of this.engines) {
-        this.setMultiPV(engine.usi.sessionID, 3);
-      }
       this.ready = true;
     } catch (e) {
       this.close();
