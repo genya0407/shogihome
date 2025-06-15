@@ -254,47 +254,40 @@ const verticalLine = (
   };
 };
 
-const getMaxElapsedMs = (record: ImmutableRecord) =>
-  Math.max(...record.moves.map((node) => node.elapsedMs));
+const getMaxTimeDiffMs = (record: ImmutableRecord) =>
+  Math.max(
+    ...record.moves.map(
+      (node, i) =>
+        node.totalElapsedMs - (record.moves[i - 1]?.totalElapsedMs || node.totalElapsedMs),
+    ),
+  );
 
 const elapsedTimeLines = (record: ImmutableRecord, config: ChartConfig) => {
-  const dataPointsByColor: {
-    black: { x: number; y: number }[];
-    white: { x: number; y: number }[];
-  } = { black: [], white: [] };
-
-  // 評価値グラフに表示する場合は、先手: 正、後手: 負となるように値を調整する
   const signByColor: { black: number; white: number } =
-    config.type === EvaluationChartType.RAW ? { black: +1, white: -1 } : { black: +1, white: +1 };
+    config.type === EvaluationChartType.RAW ? { black: -1, white: +1 } : { black: -1, white: -1 };
+  const dataPoints = []
   const scale = config.type === EvaluationChartType.RAW ? MAX_SCORE : 100;
-  const maxElapsedMs = getMaxElapsedMs(record);
+  const maxTimeDiffMs = getMaxTimeDiffMs(record);
 
-  for (const node of record.moves) {
-    // prev がなかったら先手(black)
-    const color = node.prev?.nextColor || Color.BLACK;
-    dataPointsByColor[color].push({
+  for (const [i, node] of record.moves.entries()) {
+    const prevNode = record.moves[i - 1]
+    const timeDiff = node.totalElapsedMs - (prevNode?.totalElapsedMs || node.totalElapsedMs);
+    dataPoints.push({
       x: node.ply,
-      y: signByColor[color] * (node.elapsedMs / maxElapsedMs) * scale,
+      y:
+        (timeDiff / maxTimeDiffMs) *
+        scale *
+        signByColor[prevNode?.nextColor === Color.BLACK ? "black" : "white"],
     });
   }
 
   return [
     {
-      label: `▲${t.elapsedTime}`,
-      borderColor: "black",
+      label: `▲時間優位(s)`,
+      borderColor: "yellow",
       backgroundColor: config.palette.blackPlayerElapsedTime,
-      fill: true,
-      data: dataPointsByColor[Color.BLACK],
-      borderWidth: 1,
-      showLine: true,
-    },
-    {
-      label: `△${t.elapsedTime}`,
-      borderColor: "black",
-      backgroundColor: config.palette.whitePlayerElapsedTime,
-      fill: true,
-      data: dataPointsByColor[Color.WHITE],
-      borderWidth: 1,
+      fill: false,
+      data: dataPoints,
       showLine: true,
     },
   ];
@@ -339,8 +332,8 @@ const buildScalesOption = (record: ImmutableRecord, config: ChartConfig) => {
       position: "left",
     },
     y1: {
-      min: config.type === EvaluationChartType.RAW ? (-1 * getMaxElapsedMs(record)) / 1000 : 0,
-      max: getMaxElapsedMs(record) / 1000,
+      min: config.type === EvaluationChartType.RAW ? (-1 * getMaxTimeDiffMs(record)) / 1000 : 0,
+      max: getMaxTimeDiffMs(record) / 1000,
       position: "right",
     },
   };
