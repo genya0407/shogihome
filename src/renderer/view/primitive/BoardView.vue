@@ -57,7 +57,7 @@
       <img
         v-for="(arrow, rank) in arrows.sort((a, b) => b.score - a.score)"
         :key="arrow.id"
-        :src="`/arrow/arrow_${rank}.svg`"
+        :src="`/arrow/arrow_${Math.min(rank, 3)}.svg`"
         :style="arrow.style"
         style="object-fit: cover; object-position: left top"
       />

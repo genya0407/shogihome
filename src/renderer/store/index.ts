@@ -464,7 +464,7 @@ class Store {
 
   get candidates(): Candidate[] {
     const appSettings = useAppSettings();
-    const maxScoreDiff = 100;
+    const maxScoreDiffPercentage = 0.9;
     const sfen = this.recordManager.record.position.sfen;
     const candidates: Candidate[] = [];
     const usiSet = new Set<string>();
@@ -493,7 +493,7 @@ class Store {
                 : -1e8 - info.scoreMate
               : undefined;
         if (score !== undefined) {
-          if (score < maxScore - maxScoreDiff) {
+          if (score < maxScore * maxScoreDiffPercentage) {
             continue;
           } else if (score > maxScore) {
             maxScore = score;
