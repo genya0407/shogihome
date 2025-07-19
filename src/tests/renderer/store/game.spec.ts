@@ -206,6 +206,39 @@ describe("store/game", () => {
     expect(list.next()).toBe("position startpos moves 2g2f 8c8d 2f2e");
   });
 
+  it("StartPositionList/simple-sfen", async () => {
+    mockAPI.loadSFENFile.mockImplementation(async () => [
+      "ln1g3+Rl/2sk1s+P2/2ppppb1p/p1b3p2/8P/P4P3/2PPP1P2/1+r2GS3/LN+p2KGNL w GN2Ps 36",
+      "ln1g2B+Rl/2s6/pPppppk2/6p1p/9/4P1P1P/P1PPSP3/3+psK3/L+r3G1NL b SNb2gn2p 39",
+      "ln+P3s+Pl/2+R1Gsk2/p3pp1g1/4r1ppp/1NS6/6P2/PP1+bPPS1P/3+p1K3/LG3G1NL w Nb3p 72",
+      "lnsgk2+Pl/6+N2/p1pp2p1p/4p2R1/9/2P3P2/P2PPPN1P/4s1g1K/L4+r2L w 2B2SN4P2g 56",
+    ]);
+    const list = new StartPositionList();
+    expect(list.next()).toBe("position startpos");
+
+    await expect(
+      list.reset({
+        filePath: "path/to/file.sfen",
+        swapPlayers: false,
+        order: "sequential",
+        maxGames: 4,
+      }),
+    ).resolves.toBeUndefined();
+    expect(mockAPI.loadSFENFile).toBeCalledWith("path/to/file.sfen");
+    expect(list.next()).toBe(
+      "sfen ln1g3+Rl/2sk1s+P2/2ppppb1p/p1b3p2/8P/P4P3/2PPP1P2/1+r2GS3/LN+p2KGNL w GN2Ps 36",
+    );
+    expect(list.next()).toBe(
+      "sfen ln1g2B+Rl/2s6/pPppppk2/6p1p/9/4P1P1P/P1PPSP3/3+psK3/L+r3G1NL b SNb2gn2p 39",
+    );
+    expect(list.next()).toBe(
+      "sfen ln+P3s+Pl/2+R1Gsk2/p3pp1g1/4r1ppp/1NS6/6P2/PP1+bPPS1P/3+p1K3/LG3G1NL w Nb3p 72",
+    );
+    expect(list.next()).toBe(
+      "sfen lnsgk2+Pl/6+N2/p1pp2p1p/4p2R1/9/2P3P2/P2PPPN1P/4s1g1K/L4+r2L w 2B2SN4P2g 56",
+    );
+  });
+
   it("StartPositionList/empty", async () => {
     mockAPI.loadSFENFile.mockResolvedValueOnce([]);
     const list = new StartPositionList();
@@ -303,13 +336,13 @@ describe("store/game", () => {
         expect(mockHandlers.onStopBeep).toBeCalledTimes(8);
         expect(recordManager.record.usi).toBe("position startpos moves 7g7f 3c3d 2g2f");
         expect(recordManager.record.moves[1].comment).toBe(
-          "互角\n*評価値=82\n*読み筋=△３四歩▲２六歩△８四歩\n",
+          "互角\n*評価値=82\n*読み筋=△３四歩▲２六歩△８四歩\n*エンジン=USI Engine 01\n",
         );
         expect(recordManager.record.moves[2].comment).toBe(
-          "互角\n*評価値=64\n*読み筋=▲２六歩△８四歩\n",
+          "互角\n*評価値=64\n*読み筋=▲２六歩△８四歩\n*エンジン=USI Engine 02\n",
         );
         expect(recordManager.record.moves[3].comment).toBe(
-          "互角\n*評価値=78\n*読み筋=△８四歩▲２五歩△８五歩\n",
+          "互角\n*評価値=78\n*読み筋=△８四歩▲２五歩△８五歩\n*エンジン=USI Engine 01\n",
         );
         expect(mockHandlers.onError).not.toBeCalled();
       },

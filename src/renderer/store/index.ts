@@ -19,6 +19,7 @@ import {
   JishogiDeclarationRule,
   countJishogiPoint,
   Position,
+  exportBOD,
 } from "tsshogi";
 import { reactive, UnwrapNestedRefs } from "vue";
 import { GameSettings } from "@/common/settings/game.js";
@@ -55,7 +56,11 @@ import { useAppSettings } from "./settings.js";
 import { t } from "@/common/i18n/index.js";
 import { MateSearchManager } from "./mate.js";
 import { detectUnsupportedRecordProperties } from "@/renderer/helpers/record.js";
-import { RecordFileFormat, detectRecordFileFormatByPath } from "@/common/file/record.js";
+import {
+  RecordFileFormat,
+  detectRecordFileFormatByPath,
+  getStandardRecordFileFormats,
+} from "@/common/file/record.js";
 import { setOnStartSearchHandler, setOnUpdateUSIInfoHandler } from "@/renderer/players/usi.js";
 import { useErrorStore } from "./error.js";
 import { useBusyState } from "./busy.js";
@@ -67,6 +72,7 @@ import { Attachment, ListItem } from "@/common/message.js";
 
 export type PVPreview = {
   position: ImmutablePosition;
+  engineName?: string;
   multiPV?: number;
   depth?: number;
   selectiveDepth?: number;
@@ -1157,6 +1163,11 @@ class Store {
     navigator.clipboard.writeText(str);
   }
 
+  copyBoardBOD(): void {
+    const str = exportBOD(this.recordManager.record);
+    navigator.clipboard.writeText(str);
+  }
+
   copyRecordJKF(): void {
     const str = exportJKFString(this.recordManager.record);
     navigator.clipboard.writeText(str);
@@ -1186,7 +1197,7 @@ class Store {
     useBusyState().retain();
     Promise.resolve()
       .then(() => {
-        return path || api.showOpenRecordDialog();
+        return path || api.showOpenRecordDialog(getStandardRecordFileFormats());
       })
       .then((path) => {
         if (!path) {

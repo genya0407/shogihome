@@ -22,6 +22,7 @@ export type Texts = {
   copyAsCSA: string;
   copyAsUSI: string;
   copyAsSFEN: string;
+  copyAsBOD: string;
   copyAsJKF: string;
   copyAsUSEN: string;
   copy: string;
@@ -35,7 +36,9 @@ export type Texts = {
   asUSIAll: string;
   asJSONKifuFormat: string;
   asUSEN: string;
-  copyPositionAsSFEN: string;
+  copyPosition: string;
+  asSFEN: string;
+  asBOD: string;
   pasteRecordOrPosition: string;
   addSpecialMove: string;
   deleteMoves: string;
@@ -73,7 +76,6 @@ export type Texts = {
   thisIsTestNotification: string;
   app: string;
   log: string;
-  backup: string;
   cache: string;
   help: string;
   openWebsite: string;
@@ -191,6 +193,7 @@ export type Texts = {
   portrait: string;
   piece: string;
   singleKanjiPiece: string;
+  singleKanjiWoodPiece: string;
   singleKanjiGothicPiece: string;
   singleKanjiDarkPiece: string;
   singleKanjiGothicDarkPiece: string;
@@ -198,8 +201,9 @@ export type Texts = {
   backgroundImage: string;
   board: string;
   pieceStand: string;
-  lightWoodyTexture: string;
-  warmWoodTexture: string;
+  woodTexture: string;
+  lightWoodyTexture: (n: number) => string;
+  warmWoodTexture: (n: number) => string;
   resin: string;
   transparent: string;
   boardOpacity: string;
@@ -250,6 +254,9 @@ export type Texts = {
   logLevel: string;
   manageEngines: string;
   flipBoard: string;
+  shortcutKeys: string;
+  useUpDownToMove1Ply: string;
+  useLeftRightToMove1Ply: string;
   file: string;
   recordFile: string;
   executableFile: string;
@@ -502,6 +509,20 @@ export type Texts = {
   edit: string;
   addMoves: string;
   flippedBook: string;
+  addBookMoves: string;
+  fromCurrentRecord: string;
+  fromFile: string;
+  fromDirectory: string;
+  noMoves: string;
+  register: string;
+  update: string;
+  currentMove: string;
+  branchFrom(n: number): string;
+  allPlayers: string;
+  blackPlayerOnly: string;
+  whitePlayerOnly: string;
+  filterByName: string;
+  enterPartOfPlayerNameHere: string;
   freq: string;
   frequency: string;
   new: string;
@@ -661,7 +682,6 @@ export type Texts = {
   bookMovesWereImported: string;
   anyBookMovesAreUnsavedDoYouReallyWantToDiscardThemAndCloseTheApp: string;
   sourceRecordFileNotSet: string;
-  sfenFileImportIsNotSupported: string;
   sourceDirectoryNotSet: string;
   minPlyMustBeLessThanMaxPly: string;
   playerNameNotSet: string;

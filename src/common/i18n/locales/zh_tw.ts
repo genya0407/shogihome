@@ -24,6 +24,7 @@ export const zh_tw: Texts = {
   copyAsCSA: "複製CSA棋譜",
   copyAsUSI: "複製USI棋譜",
   copyAsSFEN: "複製SFEN局面",
+  copyAsBOD: "複製BOD局面",
   copyAsJKF: "複製JKF棋譜",
   copyAsUSEN: "複製USEN棋譜",
   copy: "拷貝",
@@ -37,7 +38,9 @@ export const zh_tw: Texts = {
   asUSIAll: "USI形式(全部)",
   asJSONKifuFormat: "JSON Kifu Format",
   asUSEN: "USEN形式",
-  copyPositionAsSFEN: "複製局面(SFEN形式)",
+  copyPosition: "複製局面",
+  asSFEN: "SFEN形式",
+  asBOD: "BOD形式",
   pasteRecordOrPosition: "貼上棋譜、局面",
   addSpecialMove: "特殊手",
   deleteMoves: "刪除現在位置後的棋譜",
@@ -75,7 +78,6 @@ export const zh_tw: Texts = {
   thisIsTestNotification: "這是測試用的通知。",
   app: "軟體",
   log: "紀錄檔",
-  backup: "備份",
   cache: "快取",
   help: "協助",
   openWebsite: "官方網站",
@@ -193,6 +195,7 @@ export const zh_tw: Texts = {
   portrait: "直向",
   piece: "棋駒",
   singleKanjiPiece: "一文字駒",
+  singleKanjiWoodPiece: "一文字駒（木目）",
   singleKanjiGothicPiece: "一文字駒（黑體）",
   singleKanjiDarkPiece: "一文字駒（深色）",
   singleKanjiGothicDarkPiece: "一文字駒（黑體・深色）",
@@ -200,8 +203,9 @@ export const zh_tw: Texts = {
   backgroundImage: "背景圖片",
   board: "棋盤",
   pieceStand: "駒台",
-  lightWoodyTexture: "木目（亮色）",
-  warmWoodTexture: "木目（暖色）",
+  woodTexture: "木目",
+  lightWoodyTexture: (n: number) => `木目（亮色${n}）`,
+  warmWoodTexture: (n: number) => `木目（暖色${n}）`,
   resin: "樹脂",
   transparent: "透明",
   boardOpacity: "盤面不透明度",
@@ -252,6 +256,9 @@ export const zh_tw: Texts = {
   logLevel: "紀錄等級",
   manageEngines: "引擎設定",
   flipBoard: "盤面反轉",
+  shortcutKeys: "ショートカットキー", // TODO: Translate
+  useUpDownToMove1Ply: "↑/↓キーで1手移動", // TODO: Translate
+  useLeftRightToMove1Ply: "←/→キーで1手移動", // TODO: Translate
   file: "檔案",
   recordFile: "棋譜檔案",
   executableFile: "可執行檔案",
@@ -504,6 +511,20 @@ export const zh_tw: Texts = {
   edit: "編輯",
   addMoves: "新增該手",
   flippedBook: "反転も検索", // TODO: Translate
+  addBookMoves: "定跡手追加", // TODO: Translate
+  fromCurrentRecord: "現在の棋譜から", // TODO: Translate
+  fromFile: "ファイルから", // TODO: Translate
+  fromDirectory: "フォルダから", // TODO: Translate
+  noMoves: "指し手がありません。", // TODO: Translate
+  register: "登録", // TODO: Translate
+  update: "更新", // TODO: Translate
+  currentMove: "現在の手", // TODO: Translate
+  branchFrom: (n: number) => `${n}手目から分岐`, // TODO: Translate
+  allPlayers: "全ての対局者", // TODO: Translate
+  blackPlayerOnly: "先手のみ", // TODO: Translate
+  whitePlayerOnly: "後手のみ", // TODO: Translate
+  filterByName: "名前でフィルタ", // TODO: Translate
+  enterPartOfPlayerNameHere: "ここに対局者名の一部を入力", // TODO: Translate
   freq: "出現次數",
   frequency: "出現次數",
   new: "新增",
@@ -675,7 +696,6 @@ export const zh_tw: Texts = {
   anyBookMovesAreUnsavedDoYouReallyWantToDiscardThemAndCloseTheApp:
     "存在尚未保存的定跡。您確定要捨棄並關閉本程式嗎？",
   sourceRecordFileNotSet: "尚未指定棋譜檔案。",
-  sfenFileImportIsNotSupported: "尚未支援 .sfen 檔案。",
   sourceDirectoryNotSet: "請選擇目錄。",
   minPlyMustBeLessThanMaxPly: "最小手數應小於最大手數。",
   playerNameNotSet: "尚未設定對局者名稱。",

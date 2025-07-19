@@ -55,7 +55,7 @@
                 {{ dayjs(game.dateTime).locale(appSettings.language.replace("_", "-")).fromNow() }}
               </span>
               <span
-                class="player-name filter-link"
+                class="player-name link"
                 :class="{
                   bold:
                     floodgatePlayerName &&
@@ -64,13 +64,13 @@
                 @click="floodgatePlayerName = game.blackName"
               >
                 {{ game.blackName }}
-                <span v-if="floodgatePlayerRateMap[game.blackName]">
-                  ({{ floodgatePlayerRateMap[game.blackName] }})
+                <span v-if="floodgatePlayerRateMap?.get(game.blackName)">
+                  ({{ floodgatePlayerRateMap.get(game.blackName) }})
                 </span>
               </span>
               <span> vs </span>
               <span
-                class="player-name filter-link"
+                class="player-name link"
                 :class="{
                   bold:
                     floodgatePlayerName &&
@@ -79,11 +79,11 @@
                 @click="floodgatePlayerName = game.whiteName"
               >
                 {{ game.whiteName }}
-                <span v-if="floodgatePlayerRateMap[game.whiteName]">
-                  ({{ floodgatePlayerRateMap[game.whiteName] }})
+                <span v-if="floodgatePlayerRateMap?.get(game.whiteName)">
+                  ({{ floodgatePlayerRateMap.get(game.whiteName) }})
                 </span>
               </span>
-              <span v-if="game.winner" class="filter-link" @click="floodgateWinner = game.winner">{{
+              <span v-if="game.winner" class="link" @click="floodgateWinner = game.winner">{{
                 game.winner === Color.BLACK ? t.blackWin : t.whiteWin
               }}</span>
             </div>
@@ -126,6 +126,14 @@
         </div>
       </div>
     </div>
+    <div v-if="tab === Tab.Floodgate" class="reference">
+      <span>Floodgate: </span>
+      <span class="link" @click="api.openWebBrowser(floodgateTopURL)">{{ floodgateTopURL }}</span>
+    </div>
+    <div v-if="tab === Tab.WCSC" class="reference">
+      <span>Computer Shogi Association: </span>
+      <span class="link" @click="api.openWebBrowser(csaTopURL)">{{ csaTopURL }}</span>
+    </div>
     <!-- Common buttons -->
     <div class="main-buttons">
       <button v-show="tab === Tab.URL" data-hotkey="Enter" autofocus @click="open(url)">
@@ -156,7 +164,7 @@ const localStorageLastWCSCSearchWordKey = "LoadRemoteFileDialog.lastWCSCSearchWo
 import { t } from "@/common/i18n";
 import { computed, onMounted, ref, watch } from "vue";
 import { useStore } from "@/renderer/store";
-import { isNative } from "@/renderer/ipc/api";
+import api, { isNative } from "@/renderer/ipc/api";
 import { useErrorStore } from "@/renderer/store/error";
 import { useBusyState } from "@/renderer/store/busy";
 import {
@@ -176,6 +184,8 @@ import { getDateTimeString } from "@/common/helpers/datetime";
 import dayjs from "dayjs";
 import { useAppSettings } from "@/renderer/store/settings";
 import { Color } from "tsshogi";
+import { floodgateTopURL } from "@/common/links/floodgate";
+import { csaTopURL } from "@/common/links/csa";
 
 const store = useStore();
 const busyState = useBusyState();
@@ -186,7 +196,7 @@ const floodgatePlayerName = ref("");
 const floodgateMinRate = ref(0);
 const floodgateWinner = ref<Color | "all" | "other">("all");
 const floodgateGames = ref<FloodgateGame[]>([]);
-const floodgatePlayerRateMap = ref<Record<string, number>>({});
+const floodgatePlayerRateMap = ref<Map<string, number> | null>(null);
 const wcscEdition = ref("");
 const wcscSearchWord = ref("");
 const wcscEditions = ref([] as WCSCEdition[]);
@@ -196,10 +206,10 @@ async function updateFloodgateGameList() {
   try {
     busyState.retain();
     floodgateGames.value = await listFloodgateLatestGames();
-    const players = await listFloodgatePlayers();
-    floodgatePlayerRateMap.value = Object.fromEntries(
-      players.map((player) => [player.name, player.rate]),
-    );
+    if (floodgateGames.value.length > 0 && !floodgatePlayerRateMap.value) {
+      const players = await listFloodgatePlayers();
+      floodgatePlayerRateMap.value = new Map(players.map((player) => [player.name, player.rate]));
+    }
   } catch (e) {
     useErrorStore().add(e);
   } finally {
@@ -218,8 +228,8 @@ const filteredFloodgateGames = computed(() => {
       return false;
     }
     if (floodgateMinRate.value > 0) {
-      const blackRate = floodgatePlayerRateMap.value[game.blackName] || 0;
-      const whiteRate = floodgatePlayerRateMap.value[game.whiteName] || 0;
+      const blackRate = floodgatePlayerRateMap.value?.get(game.blackName) || 0;
+      const whiteRate = floodgatePlayerRateMap.value?.get(game.whiteName) || 0;
       if (blackRate < floodgateMinRate.value || whiteRate < floodgateMinRate.value) {
         return false;
       }
@@ -234,9 +244,11 @@ const filteredFloodgateGames = computed(() => {
 async function updateWCSCGameList() {
   try {
     busyState.retain();
-    wcscEditions.value = await listWCSCEditions();
     if (wcscEditions.value.length === 0) {
-      return;
+      wcscEditions.value = await listWCSCEditions();
+      if (wcscEditions.value.length === 0) {
+        return;
+      }
     }
     const edition =
       wcscEditions.value.find((edition) => edition.name === wcscEdition.value) ||
@@ -308,9 +320,9 @@ onMounted(async () => {
     }
   } finally {
     busyState.release();
+    watch(tab, onUpdateTab, { immediate: true });
+    watch(wcscEdition, updateWCSCGameList);
   }
-  watch(tab, onUpdateTab, { immediate: true });
-  watch(wcscEdition, updateWCSCGameList);
 });
 </script>
 
@@ -378,7 +390,7 @@ hr {
 .player-name.bold {
   font-weight: bold;
 }
-.filter-link {
+.link {
   cursor: pointer;
   text-decoration: underline;
 }
@@ -387,5 +399,9 @@ hr {
 }
 .game-info > * {
   margin-right: 5px;
+}
+.reference {
+  text-align: left;
+  font-size: 0.8em;
 }
 </style>

@@ -24,6 +24,7 @@ export const vi: Texts = {
   copyAsCSA: "Sao chép (CSA)",
   copyAsUSI: "Sao chép (USI)",
   copyAsSFEN: "Sao chép (SFEN)",
+  copyAsBOD: "Sao chép (BOD)",
   copyAsJKF: "Sao chép (JKF)",
   copyAsUSEN: "Sao chép (USEN)",
   copy: "Sao chép",
@@ -37,7 +38,9 @@ export const vi: Texts = {
   asUSIAll: "dưới dạng USI (toàn bộ)",
   asJSONKifuFormat: "dưới dạng kỳ phổ JSON",
   asUSEN: "dưới dạng USEN",
-  copyPositionAsSFEN: "Sao chép thế cờ (dưới dạng SFEN)",
+  copyPosition: "Sao chép thế cờ",
+  asSFEN: "dưới dạng SFEN",
+  asBOD: "dưới dạng BOD",
   pasteRecordOrPosition: "Dán kỳ phổ/thế cờ",
   addSpecialMove: "Chèn nước đi đặc biệt",
   deleteMoves: "Xóa từ nước hiện tại trở đi",
@@ -78,7 +81,6 @@ export const vi: Texts = {
   thisIsTestNotification: "Đây là thông báo thử",
   app: "Ứng dụng",
   log: "Log",
-  backup: "Sao lưu",
   cache: "Bộ nhớ đệm",
   help: "Trợ giúp",
   openWebsite: "Mở trang web",
@@ -196,6 +198,7 @@ export const vi: Texts = {
   portrait: "Dọc",
   piece: "Quân",
   singleKanjiPiece: "Nhất tự",
+  singleKanjiWoodPiece: "Nhất tự (Gỗ)",
   singleKanjiGothicPiece: "Nhất tự (Gothic)",
   singleKanjiDarkPiece: "Nhất tự (Tối)",
   singleKanjiGothicDarkPiece: "Nhất tự (Gothic, Tối)",
@@ -203,8 +206,9 @@ export const vi: Texts = {
   backgroundImage: "Ảnh nền",
   board: "Bàn cờ",
   pieceStand: "Komadai",
-  lightWoodyTexture: "Vân gỗ (Nhẹ)",
-  warmWoodTexture: "Vân gỗ (Ấm)",
+  woodTexture: "Vân gỗ",
+  lightWoodyTexture: (n: number) => `Vân gỗ (Nhẹ ${n})`,
+  warmWoodTexture: (n: number) => `Vân gỗ (Ấm ${n})`,
   resin: "Nhựa cây ",
   transparent: "Trong suốt",
   boardOpacity: "Độ đục bàn cờ",
@@ -255,6 +259,9 @@ export const vi: Texts = {
   logLevel: "Mức độ log",
   manageEngines: "Quản lý phần mềm",
   flipBoard: "Xoay bàn cờ",
+  shortcutKeys: "ショートカットキー", // TODO: Translate
+  useUpDownToMove1Ply: "↑/↓キーで1手移動", // TODO: Translate
+  useLeftRightToMove1Ply: "←/→キーで1手移動", // TODO: Translate
   file: "Tệp",
   recordFile: "Tệp kỳ phổ",
   executableFile: "Tệp phần mềm",
@@ -507,6 +514,20 @@ export const vi: Texts = {
   edit: "Sửa",
   addMoves: "Thêm nước đi",
   flippedBook: "反転も検索", // TODO: Translate
+  addBookMoves: "定跡手追加", // TODO: Translate
+  fromCurrentRecord: "現在の棋譜から", // TODO: Translate
+  fromFile: "ファイルから", // TODO: Translate
+  fromDirectory: "フォルダから", // TODO: Translate
+  noMoves: "指し手がありません。", // TODO: Translate
+  register: "登録", // TODO: Translate
+  update: "更新", // TODO: Translate
+  currentMove: "現在の手", // TODO: Translate
+  branchFrom: (n: number) => `${n}手目から分岐`, // TODO: Translate
+  allPlayers: "全ての対局者", // TODO: Translate
+  blackPlayerOnly: "先手のみ", // TODO: Translate
+  whitePlayerOnly: "後手のみ", // TODO: Translate
+  filterByName: "名前でフィルタ", // TODO: Translate
+  enterPartOfPlayerNameHere: "ここに対局者名の一部を入力", // TODO: Translate
   freq: "Tần suất",
   frequency: "Tần suất xuất hiện",
   new: "Mới",
@@ -687,7 +708,6 @@ export const vi: Texts = {
   anyBookMovesAreUnsavedDoYouReallyWantToDiscardThemAndCloseTheApp:
     "Có các nước định thức chưa lưu. Bạn có muốn hủy bỏ chúng và đóng ứng dụng?",
   sourceRecordFileNotSet: "Chưa chỉ định tệp kỳ phổ gốc.",
-  sfenFileImportIsNotSupported: "Không hỗ trợ định dạng .sfen.",
   sourceDirectoryNotSet: "Vui lòng chọn một tập tin.",
   minPlyMustBeLessThanMaxPly: "Số nước ít nhất phải nhỏ hơn số nước lớn nhất.",
   playerNameNotSet: "Tên người chơi chưa được đặt.",

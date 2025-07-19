@@ -4,6 +4,7 @@ import { Player, SearchInfo } from "@/renderer/players/player.js";
 import { defaultGameSettings, GameSettings, JishogiRule } from "@/common/settings/game.js";
 import {
   Color,
+  detectRecordFormat,
   formatMove,
   JishogiDeclarationResult,
   JishogiDeclarationRule,
@@ -137,6 +138,16 @@ export class StartPositionList {
       usiList.length = maxPositions;
     }
 
+    // add "sfen " prefix to simple SFEN strings
+    for (let i = 0; i < usiList.length; i++) {
+      if (
+        !usiList[i].startsWith("sfen ") &&
+        detectRecordFormat(usiList[i]) === RecordFormatType.SFEN
+      ) {
+        usiList[i] = `sfen ${usiList[i]}`;
+      }
+    }
+
     // validate USI
     if (usiList.length === 0) {
       throw new Error("No available positions in the list.");
@@ -144,7 +155,7 @@ export class StartPositionList {
     for (let i = 0; i < usiList.length; i++) {
       const record = Record.newByUSI(usiList[i]);
       if (!(record instanceof Record)) {
-        throw new Error(`Invalid USI: ${record}: ${usiList[i]}`);
+        throw record;
       }
     }
 
@@ -501,11 +512,13 @@ export class GameManager {
     // コメントを追加する。
     if (info && this.settings.enableComment) {
       const appSettings = useAppSettings();
+      const engineName = this.settings[move.color].name;
       this.recordManager.appendSearchComment(
         SearchInfoSenderType.PLAYER,
         appSettings.searchCommentFormat,
         info,
         CommentBehavior.APPEND,
+        { engineName },
       );
     }
     // 駒音を鳴らす。
