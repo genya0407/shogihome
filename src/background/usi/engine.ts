@@ -9,6 +9,7 @@ import {
 import { Logger } from "@/background/log.js";
 import { SCORE_MATE_INFINITE, USIInfoCommand } from "@/common/game/usi.js";
 import { ChildProcess } from "./process.js";
+import { UsiWebsocket } from "./ws.js";
 import {
   addCommand,
   Command,
@@ -187,7 +188,7 @@ const USIPonderOptionOrder = 2;
 const UserDefinedOptionOrderStart = 100;
 
 export class EngineProcess {
-  private process: ChildProcess | null = null;
+  private process: ChildProcess | UsiWebsocket | null = null;
   private _name = "NO NAME";
   private _author = "";
   private _engineOptions = {} as USIEngineOptions;
@@ -222,7 +223,7 @@ export class EngineProcess {
     private sessionID: number,
     private logger: Logger,
     private option: EngineProcessOption,
-  ) {}
+  ) { }
 
   get path(): string {
     return this._path;
@@ -321,7 +322,11 @@ export class EngineProcess {
   launch(): void {
     this.logger.info("sid=%d: launch: %s", this.sessionID, this.path);
     this.setLaunchTimeout();
-    this.process = new ChildProcess(this.path);
+    if (this.path.startsWith("ws://") || this.path.startsWith("wss://")) {
+      this.process = new UsiWebsocket(this.path);
+    } else {
+      this.process = new ChildProcess(this.path);
+    }
     this.process.on("error", this.onError.bind(this));
     this.process.on("close", this.onClose.bind(this));
     this.process.on("receive", this.onReceive.bind(this));

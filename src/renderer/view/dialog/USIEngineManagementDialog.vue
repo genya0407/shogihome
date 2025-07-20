@@ -56,6 +56,7 @@
     <div class="menu row">
       <button class="wide" @click="add()">{{ t.add }}</button>
       <button class="wide" @click="openMerge()">{{ t.compareAndMerge }}</button>
+      <button class="wide" @click="addWs()"> Add Ws </button>
     </div>
     <div class="main-buttons">
       <button data-hotkey="Enter" autofocus @click="saveAndClose()">
@@ -202,6 +203,22 @@ const add = async () => {
     if (!path) {
       return;
     }
+    const appSettings = useAppSettings();
+    const timeoutSeconds = appSettings.engineTimeoutSeconds;
+    const engine = await api.getUSIEngineInfo(path, timeoutSeconds);
+    usiEngines.value.addEngine(engine);
+    lastAdded.value = scrollTo = engine.uri;
+  } catch (e) {
+    useErrorStore().add(e);
+  } finally {
+    busyState.release();
+  }
+};
+
+const addWs = async () => {
+  try {
+    busyState.retain();
+    const path = "ws://localhost:9292"; // TODO: fix
     const appSettings = useAppSettings();
     const timeoutSeconds = appSettings.engineTimeoutSeconds;
     const engine = await api.getUSIEngineInfo(path, timeoutSeconds);
