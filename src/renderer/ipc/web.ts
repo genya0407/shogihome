@@ -3,7 +3,7 @@ import { defaultAnalysisSettings } from "@/common/settings/analysis.js";
 import { defaultAppSettings } from "@/common/settings/app.js";
 import { defaultGameSettings } from "@/common/settings/game.js";
 import { defaultResearchSettings } from "@/common/settings/research.js";
-import { USIEngines } from "@/common/settings/usi.js";
+import { USIEngines, USIEngine } from "@/common/settings/usi.js";
 import { LogLevel } from "@/common/log.js";
 import { Bridge } from "@/renderer/ipc/bridge.js";
 import { t } from "@/common/i18n/index.js";
@@ -17,6 +17,24 @@ import { SessionStates } from "@/common/advanced/monitor.js";
 import { emptyLayoutProfileList } from "@/common/settings/layout.js";
 import * as uri from "@/common/uri.js";
 import { basename } from "@/renderer/helpers/path.js";
+import { GameResult } from "@/common/game/result.js";
+import {
+  gameover as usiGameover,
+  getUSIEngineInfo as usiGetUSIEngineInfo,
+  setOption as usiSetOption,
+  go as usiGo,
+  goPonder as usiGoPonder,
+  goInfinite as usiGoInfinite,
+  goMate as usiGoMate,
+  ponderHit as usiPonderHit,
+  quit as usiQuit,
+  setupPlayer as usiSetupPlayer,
+  ready as usiReady,
+  stop as usiStop,
+  setHandlers as setUSIHandlers,
+} from "@/renderer/usi/index.js";
+import { Command } from "@/common/advanced/command.js";
+import { USIInfoCommand } from "@/common/game/usi.js";
 
 enum STORAGE_KEY {
   APP_SETTINGS = "appSetting",
@@ -26,9 +44,34 @@ enum STORAGE_KEY {
   GAME_SETTINGS = "gameSetting",
   MATE_SEARCH_SETTINGS = "mateSearchSetting",
   CSA_GAME_SETTINGS_HISTORY = "csaGameSettingHistory",
+  USI_ENGINES = "usiEngines",
 }
 
 const fileCache = new Map<string, ArrayBuffer>();
+const handlers = {
+  onUSIBestMove(sessionID: number, usi: string, usiMove: string, ponder?: string): void {
+    // Do Nothing
+  },
+  onUSICheckmate(sessionID: number, usi: string, usiMoves: string[]): void {
+    // Do Nothing
+  },
+  onUSICheckmateNotImplemented(sessionID: number): void {
+    // Do Nothing
+  },
+  onUSICheckmateTimeout(sessionID: number, usi: string): void {
+    // Do Nothing
+  },
+  onUSINoMate(sessionID: number, usi: string): void {
+    // Do Nothing
+  },
+  onUSIInfo(sessionID: number, usi: string, info: USIInfoCommand): void {
+    // Do Nothing
+  },
+  sendPromptCommand(sessionID: number, command: Command): void {
+    // Do Nothing
+  },
+};
+setUSIHandlers(handlers);
 
 // Electron を使わずにシンプルな Web アプリケーションとして実行した場合に使用します。
 export const webAPI: Bridge = {
@@ -148,10 +191,10 @@ export const webAPI: Bridge = {
     localStorage.setItem(STORAGE_KEY.MATE_SEARCH_SETTINGS, json);
   },
   async loadUSIEngines(): Promise<string> {
-    return new USIEngines().json;
+    return localStorage.getItem(STORAGE_KEY.USI_ENGINES) ?? new USIEngines().json;
   },
-  async saveUSIEngines(): Promise<void> {
-    // Do Nothing
+  async saveUSIEngines(usiEngines: string): Promise<void> {
+    localStorage.setItem(STORAGE_KEY.USI_ENGINES, usiEngines);
   },
   async loadBookImportSettings(): Promise<string> {
     throw new Error(t.thisFeatureNotAvailableOnWebApp);
@@ -285,62 +328,69 @@ export const webAPI: Bridge = {
   async showSelectUSIEngineDialog(): Promise<string> {
     throw new Error(t.thisFeatureNotAvailableOnWebApp);
   },
-  async getUSIEngineInfo(): Promise<string> {
-    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  async getUSIEngineInfo(path: string, timeoutSeconds: number): Promise<string> {
+    return JSON.stringify(await usiGetUSIEngineInfo(path, timeoutSeconds));
   },
   async sendUSIOptionButtonSignal(): Promise<void> {
     // Do Nothing
   },
-  async usiLaunch(): Promise<number> {
-    throw new Error(t.thisFeatureNotAvailableOnWebApp);
+  async usiLaunch(json: string, timeoutSeconds: number): Promise<number> {
+    const engine = JSON.parse(json) as USIEngine;
+    return await usiSetupPlayer(engine, timeoutSeconds);
   },
-  async usiReady(): Promise<void> {
-    // Do Nothing
+  async usiReady(sessionID: number): Promise<void> {
+    return await usiReady(sessionID);
   },
-  async usiSetOption(): Promise<void> {
-    // Do Nothing
+  async usiSetOption(sessionID: number, name: string, value: string): Promise<void> {
+    return usiSetOption(sessionID, name, value);
   },
-  async usiGo(): Promise<void> {
-    // Do Nothing
+  async usiGo(sessionID: number, usi: string, timeStatesJSON: string): Promise<void> {
+    return usiGo(sessionID, usi, JSON.parse(timeStatesJSON));
   },
-  async usiGoPonder(): Promise<void> {
-    // Do Nothing
+  async usiGoPonder(sessionID: number, usi: string, timeStatesJSON: string): Promise<void> {
+    return usiGoPonder(sessionID, usi, JSON.parse(timeStatesJSON));
   },
-  async usiPonderHit(): Promise<void> {
-    // Do Nothing
+  async usiPonderHit(sessionID: number, timeStatesJSON: string): Promise<void> {
+    return usiPonderHit(sessionID, JSON.parse(timeStatesJSON));
   },
-  async usiGoInfinite(): Promise<void> {
-    // Do Nothing
+  async usiGoInfinite(sessionID: number, usi: string): Promise<void> {
+    return usiGoInfinite(sessionID, usi);
   },
-  async usiGoMate(): Promise<void> {
-    // Do Nothing
+  async usiGoMate(sessionID: number, usi: string, maxSeconds?: number): Promise<void> {
+    return usiGoMate(sessionID, usi, maxSeconds);
   },
-  async usiStop(): Promise<void> {
-    // Do Nothing
+  async usiStop(sessionID: number): Promise<void> {
+    return usiStop(sessionID);
   },
-  async usiGameover(): Promise<void> {
-    // Do Nothing
+  async usiGameover(sessionID: number, result: GameResult): Promise<void> {
+    return usiGameover(sessionID, result);
   },
-  async usiQuit(): Promise<void> {
-    // Do Nothing
+  async usiQuit(sessionID: number): Promise<void> {
+    return usiQuit(sessionID);
   },
-  onUSIBestMove(): void {
-    // Do Nothing
+  onUSIBestMove(
+    callback: (sessionID: number, usi: string, usiMove: string, ponder?: string) => void,
+  ): void {
+    handlers["onUSIBestMove"] = callback;
   },
-  onUSICheckmate(): void {
-    // Do Nothing
+  onUSICheckmate(callback: (sessionID: number, usi: string, moves: string[]) => void): void {
+    handlers["onUSICheckmate"] = callback;
   },
-  onUSICheckmateNotImplemented(): void {
-    // Do Nothing
+  onUSICheckmateNotImplemented(callback: (sessionID: number) => void): void {
+    handlers["onUSICheckmateNotImplemented"] = callback;
   },
-  onUSICheckmateTimeout(): void {
-    // Do Nothing
+  onUSICheckmateTimeout(callback: (sessionID: number, usi: string) => void): void {
+    handlers["onUSICheckmateTimeout"] = callback;
   },
-  onUSINoMate(): void {
-    // Do Nothing
+  onUSINoMate(callback: (sessionID: number, usi: string) => void): void {
+    handlers["onUSINoMate"] = callback;
   },
-  onUSIInfo(): void {
-    // Do Nothing
+  onUSIInfo(callback: (sessionID: number, usi: string, json: string) => void): void {
+    handlers["onUSIInfo"] = (
+      sessionID: number,
+      usi: string,
+      usiInfoCommand: USIInfoCommand,
+    ): void => callback(sessionID, usi, JSON.stringify(usiInfoCommand));
   },
 
   // CSA
