@@ -23,6 +23,46 @@
           <div class="label">{{ t.stopGame }}</div>
         </button>
       </div>
+      <div v-if="isMobileWebApp()" class="group">
+        <!-- 検討 -->
+        <button
+          v-show="store.researchState !== ResearchState.RUNNING"
+          class="control-item"
+          data-hotkey="Mod+r"
+          @click="onResearch"
+        >
+          <Icon :icon="IconType.RESEARCH" />
+          <span :class="{ tooltip: true }">{{ t.research }}</span>
+        </button>
+        <!-- 検討終了 -->
+        <button
+          v-show="store.researchState === ResearchState.RUNNING"
+          class="control-item close"
+          @click="onEndResearch"
+        >
+          <Icon :icon="IconType.END" />
+          <span :class="{ tooltip: true }">{{ t.endResearch }}</span>
+        </button>
+        <!-- 解析 -->
+        <button
+          v-show="store.appState === AppState.NORMAL"
+          class="control-item"
+          data-hotkey="Mod+a"
+          @click="onAnalysis"
+        >
+          <Icon :icon="IconType.ANALYSIS" />
+          <span :class="{ tooltip: true }">{{ t.analysis }}</span>
+        </button>
+        <!-- 解析中断 -->
+        <button
+          v-show="store.appState === AppState.ANALYSIS"
+          class="control-item close"
+          @click="onEndAnalysis"
+        >
+          <Icon :icon="IconType.STOP" />
+          <span :class="{ tooltip: true }">{{ t.stopAnalysis }}</span>
+        </button>
+      </div>
       <div class="group">
         <button :disabled="!states.newFile" @click="onNewFile">
           <Icon :icon="IconType.FILE" />
@@ -150,7 +190,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import Icon from "@/renderer/view/primitive/Icon.vue";
 import { IconType } from "@/renderer/assets/icons";
 import { useStore } from "@/renderer/store";
-import { AppState } from "@/common/control/state.js";
+import { AppState, ResearchState } from "@/common/control/state.js";
 import api, { isMobileWebApp, isNative } from "@/renderer/ipc/api";
 import { useAppSettings } from "@/renderer/store/settings";
 import { installHotKeyForDialog, uninstallHotKeyForDialog } from "@/renderer/devices/hotkey";
@@ -187,6 +227,22 @@ const onGame = () => {
 };
 const onStopGame = () => {
   store.stopGame();
+  emit("close");
+};
+const onResearch = () => {
+  store.showResearchDialog();
+  emit("close");
+};
+const onEndResearch = () => {
+  store.stopResearch();
+  emit("close");
+};
+const onAnalysis = () => {
+  store.showAnalysisDialog();
+  emit("close");
+};
+const onEndAnalysis = () => {
+  store.stopAnalysis();
   emit("close");
 };
 const onNewFile = () => {

@@ -36,6 +36,14 @@
           v-show="bottomUIType === BottomUIType.INFO"
           :size="bottomViewSize"
         />
+        <EvaluationChart
+          v-if="showRecordViewOnBottom"
+          v-show="bottomUIType === BottomUIType.EVALUATION_CHART"
+          :size="bottomViewSize"
+          :type="EvaluationChartType.RAW"
+          :thema="appSettings.thema"
+          :coefficient-in-sigmoid="appSettings.coefficientInSigmoid"
+        />
         <HorizontalSelector
           v-if="showRecordViewOnBottom"
           v-model:value="bottomUIType"
@@ -43,6 +51,7 @@
             { label: t.record, value: BottomUIType.RECORD },
             { label: t.comments, value: BottomUIType.COMMENT },
             { label: t.recordProperties, value: BottomUIType.INFO },
+            { label: t.evaluation, value: BottomUIType.EVALUATION_CHART },
           ]"
           :height="selectorHeight"
         />
@@ -87,6 +96,7 @@ enum BottomUIType {
   RECORD = "record",
   COMMENT = "comment",
   INFO = "info",
+  EVALUATION_CHART = "evaluation_chart",
 }
 enum SideUIType {
   RECORD = "record",
@@ -96,7 +106,7 @@ enum SideUIType {
 
 <script setup lang="ts">
 import { RectSize } from "@/common/assets/geometry";
-import { BoardLayoutType } from "@/common/settings/layout";
+import { BoardLayoutType, EvaluationChartType } from "@/common/settings/layout";
 import { Lazy } from "@/renderer/helpers/lazy";
 import BoardPane from "@/renderer/view/main/BoardPane.vue";
 import RecordPane from "@/renderer/view/main/RecordPane.vue";
@@ -106,12 +116,16 @@ import RecordComment from "@/renderer/view/tab/RecordComment.vue";
 import HorizontalSelector from "@/renderer/view/primitive/HorizontalSelector.vue";
 import { t } from "@/common/i18n";
 import RecordInfo from "@/renderer/view/tab/RecordInfo.vue";
+import EvaluationChart from "@/renderer/view/tab/EvaluationChart.vue";
 import { isIOS } from "@/renderer/helpers/env";
+import { useAppSettings } from "@/renderer/store/settings";
 
 const lazyUpdateDelay = 80;
 const selectorHeight = 30;
 const minRecordViewWidth = 250;
 const minRecordViewHeight = 130;
+
+const appSettings = useAppSettings();
 
 // iOS の多くのバージョンでは safe-area-inset-bottom が 21px になる。
 // それ以外の環境もドロップシャドウの高さを考慮してマージンを持たせる。
