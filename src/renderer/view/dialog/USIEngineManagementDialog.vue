@@ -218,7 +218,10 @@ const add = async () => {
 const addWs = async () => {
   try {
     busyState.retain();
-    const path = "ws://localhost:9292"; // TODO: fix
+    const path = prompt("Enter WebSocket URL:", "ws://localhost:9292");
+    if (!path) {
+      return;
+    }
     const appSettings = useAppSettings();
     const timeoutSeconds = appSettings.engineTimeoutSeconds;
     const engine = await api.getUSIEngineInfo(path, timeoutSeconds);
