@@ -126,6 +126,12 @@
         </button>
       </div>
       <div v-if="isMobileWebApp()" class="group">
+        <button @click="onUSIEngineManagement">
+          <Icon :icon="IconType.ENGINE_SETTINGS" />
+          <div class="label">{{ t.engineManagement }}</div>
+        </button>
+      </div>
+      <div v-if="isMobileWebApp()" class="group">
         <button @click="openCopyright">
           <Icon :icon="IconType.LICENSE" />
           <div class="label">{{ t.license }}</div>
@@ -269,6 +275,10 @@ const onPaste = () => {
 };
 const onAppSettings = () => {
   store.showAppSettingsDialog();
+  emit("close");
+};
+const onUSIEngineManagement = () => {
+  store.showUsiEngineManagementDialog();
   emit("close");
 };
 const states = computed(() => {
