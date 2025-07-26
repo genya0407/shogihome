@@ -368,7 +368,7 @@ export function defaultAppSettings(opt?: {
     bookOnTheFlyThresholdMB: 256,
     flippedBook: true,
     translateEngineOptionName: true,
-    engineTimeoutSeconds: 10,
+    engineTimeoutSeconds: 600,
     nodeCountFormat: NodeCountFormat.COMMA_SEPARATED,
     evaluationViewFrom: EvaluationViewFrom.EACH,
     maxArrowsPerEngine: 3,
